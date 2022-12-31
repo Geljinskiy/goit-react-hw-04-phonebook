@@ -1,0 +1,16 @@
+/* span */
+.contactItem {
+  margin-right: 16px;
+  font-size: 20px;
+}
+
+/* li */
+.listItem:not(:last-child) {
+  margin-bottom: 20px;
+}
+
+/* div */
+.listWrapper {
+  display: flex;
+  justify-content: space-between;
+}
