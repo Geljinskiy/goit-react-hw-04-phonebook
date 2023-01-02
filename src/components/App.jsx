@@ -1,4 +1,5 @@
 import React from 'react';
+import { useState, useEffect } from 'react';
 
 import { nanoid } from 'nanoid';
 
@@ -9,56 +10,42 @@ import Box from './Common/Box';
 
 import css from './Common/Common.module.css';
 
-export class App extends React.Component {
-  state = {
-    contacts: [],
-    filter: '',
-  };
+export const App = () => {
+  const [contacts, setContacts] = useState([]);
+  const [filter, setFilter] = useState('');
 
-  componentDidMount() {
+  useEffect(() => {
     try {
       const savedContacts = JSON.parse(localStorage.getItem('savedContacts'));
-      if (!savedContacts) {
+      if (!savedContacts || savedContacts.length < 1) {
         return;
       }
-      this.setState({ contacts: savedContacts });
+      setContacts(savedContacts);
     } catch (error) {
       console.log('error :', error);
     }
-  }
+  }, []);
 
-  componentDidUpdate() {
-    const { contacts } = this.state;
+  useEffect(() => {
     localStorage.setItem('savedContacts', JSON.stringify(contacts));
-  }
+  }, [contacts]);
 
-  onAddingContact = ({ name, number }) => {
-    const isExist = this.state.contacts.filter(
-      contact => contact.name === name
-    ).length;
+  const onAddingContact = ({ name, number }) => {
+    const isExist = contacts.filter(contact => contact.name === name).length;
 
     if (isExist) {
       alert(`${name} is already in contacts.`);
       return;
     }
 
-    this.setState(prevState => {
-      return {
-        contacts: [
-          ...prevState.contacts,
-          { id: nanoid(), name: name, number: number },
-        ],
-      };
-    });
+    setContacts([...contacts, { id: nanoid(), name: name, number: number }]);
   };
 
-  onFilter = ev => {
-    this.setState({ filter: ev.currentTarget.value });
+  const onFilter = ev => {
+    setFilter(ev.currentTarget.value);
   };
 
-  getVisibleContacts = () => {
-    const { contacts, filter } = this.state;
-
+  const getVisibleContacts = () => {
     const regNormolize = sentence => {
       return sentence.toLowerCase().trim();
     };
@@ -71,31 +58,28 @@ export class App extends React.Component {
     });
   };
 
-  onDelete = id => {
-    this.setState(prevState => {
-      return {
-        contacts: prevState.contacts.filter(contact => {
-          return contact.id !== id;
-        }),
-      };
-    });
+  const onDelete = id => {
+    setContacts(
+      contacts.filter(contact => {
+        return contact.id !== id;
+      })
+    );
   };
 
-  render() {
-    const visibleContacts = this.getVisibleContacts();
-    return (
-      <Box mt={40} ml={40}>
-        <Box mb={32} fontSize={18} width={380}>
-          <h1 className={css.heading}>Phonebook</h1>
-          <ContactForm addContact={this.onAddingContact} />
-        </Box>
+  const visibleContacts = getVisibleContacts();
 
-        <Box fontSize={18} width={360}>
-          <h2 className={css.heading}>Contacts</h2>
-          <Filter filter={this.state.filter} onFilter={this.onFilter} />
-          <ContactList contacts={visibleContacts} onDelete={this.onDelete} />
-        </Box>
+  return (
+    <Box mt={40} ml={40}>
+      <Box mb={32} fontSize={18} width={380}>
+        <h1 className={css.heading}>Phonebook</h1>
+        <ContactForm addContact={onAddingContact} />
       </Box>
-    );
-  }
-}
+
+      <Box fontSize={18} width={360}>
+        <h2 className={css.heading}>Contacts</h2>
+        <Filter filter={filter} onFilter={onFilter} />
+        <ContactList contacts={visibleContacts} onDelete={onDelete} />
+      </Box>
+    </Box>
+  );
+};
