@@ -38,7 +38,10 @@ export const App = () => {
       return;
     }
 
-    setContacts([...contacts, { id: nanoid(), name: name, number: number }]);
+    setContacts(state => [
+      ...state,
+      { id: nanoid(), name: name, number: number },
+    ]);
   };
 
   const onFilter = ev => {
@@ -59,8 +62,8 @@ export const App = () => {
   };
 
   const onDelete = id => {
-    setContacts(
-      contacts.filter(contact => {
+    setContacts(state =>
+      state.filter(contact => {
         return contact.id !== id;
       })
     );
