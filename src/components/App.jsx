@@ -11,12 +11,16 @@ import Box from './Common/Box';
 import css from './Common/Common.module.css';
 
 export const App = () => {
-  const [contacts, setContacts] = useState([]);
+  const [contacts, setContacts] = useState(
+    JSON.parse(window.localStorage.getItem('savedContacts')) ?? []
+  );
   const [filter, setFilter] = useState('');
 
   useEffect(() => {
     try {
-      const savedContacts = JSON.parse(localStorage.getItem('savedContacts'));
+      const savedContacts = JSON.parse(
+        window.localStorage.getItem('savedContacts')
+      );
       if (!savedContacts || savedContacts.length < 1) {
         return;
       }
@@ -27,7 +31,7 @@ export const App = () => {
   }, []);
 
   useEffect(() => {
-    localStorage.setItem('savedContacts', JSON.stringify(contacts));
+    window.localStorage.setItem('savedContacts', JSON.stringify(contacts));
   }, [contacts]);
 
   const onAddingContact = ({ name, number }) => {
