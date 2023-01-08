@@ -17,20 +17,6 @@ export const App = () => {
   const [filter, setFilter] = useState('');
 
   useEffect(() => {
-    try {
-      const savedContacts = JSON.parse(
-        window.localStorage.getItem('savedContacts')
-      );
-      if (!savedContacts || savedContacts.length < 1) {
-        return;
-      }
-      setContacts(savedContacts);
-    } catch (error) {
-      console.log('error :', error);
-    }
-  }, []);
-
-  useEffect(() => {
     window.localStorage.setItem('savedContacts', JSON.stringify(contacts));
   }, [contacts]);
 
